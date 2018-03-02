@@ -16,13 +16,18 @@
           </g>
         </g>
         <rect :transform="selectionTransform" class="selection" x=0 y=0 width=100 height=24></rect>
-
       </g>
     </svg>
+    <div class="editor__frame" :style="styleObj" v-if="editing">
+      <input ref="hiddenInput" class="editor__textarea" v-model="editingText" @blur="onBlur" autofocus />
+    </div>
   </div>
 </template>
 
 <script>
+import "bootstrap/dist/css/bootstrap-reboot.min.css";
+import Vue from "vue";
+
 export default {
   name: "SushiGrid",
   props: {},
@@ -37,15 +42,28 @@ export default {
       selection: {
         c: 1,
         r: 0
-      }
+      },
+      editingText: "",
+      editing: false
     };
   },
   computed: {
+    styleObj() {
+      return {
+        left: this.selection.c * 100 + "px",
+        top: this.selection.r * 24 + 24 + "px"
+      };
+    },
     selectionTransform() {
       return `translate(${this.selection.c * 100},  ${this.selection.r * 24})`;
     }
   },
   methods: {
+    onBlur() {
+      this.editing = false;
+
+      Vue.set(this.data[this.selection.r], this.selection.c, this.editingText);
+    },
     translateCol(ci) {
       return `translate(${ci * 100}, 0)`;
     },
@@ -53,8 +71,18 @@ export default {
       return `translate(0, ${ri * 24})`;
     },
     selectCell(c, r) {
+      this.editingText = this.data[r][c];
+      if (this.selection.c === c && this.selection.r === r) {
+        this.editCell();
+      }
       this.selection.c = c;
       this.selection.r = r;
+    },
+    editCell(c, r) {
+      this.editing = true;
+      Vue.nextTick(() => {
+        this.$refs.hiddenInput.focus();
+      });
     }
   }
 };
@@ -75,9 +103,23 @@ rect {
 .col-header {
   fill: #eee;
 }
+.grid {
+  position: relative;
+}
+
+.editor__frame {
+  position: absolute;
+}
 
 text {
   dominant-baseline: central;
+}
+
+input {
+  border: none;
+  box-sizing: border-box;
+  outline: 0;
+  margin-left: 2px;
 }
 
 svg {
