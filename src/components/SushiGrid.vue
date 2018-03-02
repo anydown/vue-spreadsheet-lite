@@ -1,8 +1,8 @@
 <template>
   <div class="grid">
     <svg width=500>
-      <g v-for="(row, ri) in data" :key="ri">
-        <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci, ri)">
+      <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
+        <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)">
           <rect x=0 y=0 width=100 height=24>
           </rect>
           <text x=0 y=12 width=100 height=24>{{col}}</text>
@@ -23,8 +23,11 @@ export default {
     };
   },
   methods: {
-    translateCol(ri, ci) {
-      return `translate(${ri * 100}, ${ci * 24})`;
+    translateCol(ci) {
+      return `translate(${ci * 100}, 0)`;
+    },
+    translateRow(ri) {
+      return `translate(0, ${ri * 24})`;
     }
   }
 };
