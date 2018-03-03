@@ -2,20 +2,20 @@
   <div class="grid">
     <svg width=500 height=400>
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
-        <rect class="col-header" x=0 y=0 width=100 height=24>
+        <rect class="col-header" x=0 y=0 width=100 :height="rowHeight">
         </rect>
-        <text text-anchor="middle" x=49 y=12 width=100 height=24>{{col}}</text>
+        <text text-anchor="middle" x=49 y=12 width=100 :height="rowHeight">{{col}}</text>
       </g>
       <g transform="translate(0,24)">
 
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
           <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)">
-            <rect x=0 y=0 width=100 height=24 @click="selectCell(ci, ri)">
+            <rect x=0 y=0 width=100 :height="rowHeight" @click="selectCell(ci, ri)">
             </rect>
-            <text x=2 y=12 width=100 height=24>{{col}}</text>
+            <text x=2 y=12 width=100 :height="rowHeight">{{col}}</text>
           </g>
         </g>
-        <rect :transform="selectionTransform" class="selection" x=0 y=0 width=100 height=24></rect>
+        <rect :transform="selectionTransform" class="selection" x=0 y=0 width=100 :height="rowHeight"></rect>
       </g>
     </svg>
     <div class="editor__frame" :style="styleObj" v-if="editing">
@@ -44,7 +44,8 @@ export default {
         r: 0
       },
       editingText: "",
-      editing: false
+      editing: false,
+      rowHeight: 24
     };
   },
   computed: {
