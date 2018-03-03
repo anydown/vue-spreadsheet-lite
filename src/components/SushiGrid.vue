@@ -10,7 +10,7 @@
 
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
           <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)">
-            <rect x=0 y=0 width=100 :height="rowHeight" @mousedown="setSelectionStart(ci, ri)" @mousemove="setSelectionEnd(ci, ri)">
+            <rect x=0 y=0 width=100 :height="rowHeight" @mousedown="onMouseDownCell(ci, ri)" @mousemove="setSelectionEnd(ci, ri)">
             </rect>
             <text x=2 y=12 width=100 :height="rowHeight">{{col}}</text>
           </g>
@@ -79,13 +79,12 @@ export default {
     }
   },
   methods: {
+    setCell(c, r, value) {
+      Vue.set(this.data[r], c, value);
+    },
     onBlur() {
       this.editing = false;
-      Vue.set(
-        this.data[this.editingCell.r],
-        this.editingCell.c,
-        this.editingText
-      );
+      this.setCell(this.editingCell.c, this.editingCell.r, this.editingText);
     },
     translateCol(ci) {
       return `translate(${ci * 100}, 0)`;
@@ -93,7 +92,7 @@ export default {
     translateRow(ri) {
       return `translate(0, ${ri * 24})`;
     },
-    setSelectionStart(c, r) {
+    onMouseDownCell(c, r) {
       if (
         this.selectionSize.c === c &&
         this.selectionSize.r === r &&
@@ -103,6 +102,15 @@ export default {
         this.editCell(c, r);
         return;
       }
+      this.setSelectionStart(c, r);
+    },
+    setSelectionSingle(c, r) {
+      this.selection.c = c;
+      this.selection.r = r;
+      this.selection.ec = c;
+      this.selection.er = r;
+    },
+    setSelectionStart(c, r) {
       this.selection.c = c;
       this.selection.r = r;
       this.selection.ec = c;
@@ -126,7 +134,49 @@ export default {
       Vue.nextTick(() => {
         this.$refs.hiddenInput.focus();
       });
+    },
+    clearCell() {},
+    clearSelection() {
+      this.selectionSize.r;
+    },
+    moveCursor(dc, dr) {
+      this.setSelectionSingle(this.selection.c + dc, this.selection.r + dr);
     }
+  },
+  mounted() {
+    window.onkeydown = e => {
+      switch (e.keyCode) {
+        case 37: //left
+          this.moveCursor(-1, 0);
+          break;
+        case 38: //up
+          this.moveCursor(0, -1);
+          break;
+        case 39: //right
+          this.moveCursor(1, 0);
+          break;
+        case 40: //down
+          this.moveCursor(0, 1);
+          break;
+        case 46: //delete
+          this.clearSelection();
+          break;
+        case 13: //enter
+          this.moveCursor(0, 1);
+          break;
+        case 16: //shift
+          // selection.selectionStart();
+          break;
+        case 91: //ctrl
+          break;
+        case 113: //F2
+          break;
+        default:
+          // isCellModified = true;
+          // showTextField(selection);
+          break;
+      }
+    };
   }
 };
 </script>
