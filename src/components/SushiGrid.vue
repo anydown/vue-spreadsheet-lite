@@ -9,8 +9,8 @@
       <g transform="translate(0,24)">
 
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
-          <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)">
-            <rect x=0 y=0 width=100 :height="rowHeight" @mousedown="onMouseDownCell(ci, ri)" @mousemove="setSelectionEnd(ci, ri)">
+          <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="setSelectionEnd(ci, ri)">
+            <rect x=0 y=0 width=100 :height="rowHeight">
             </rect>
             <text x=2 y=12 width=100 :height="rowHeight">{{col}}</text>
           </g>
