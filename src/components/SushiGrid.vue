@@ -1,6 +1,6 @@
 <template>
-  <div class="grid">
-    <svg width=500 height=400  @mouseup="endSelection()">
+  <div class="grid" @mouseup="onMouseUpSvg()">
+    <svg width=500 height=400 >
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
         <rect class="col-header" x=0 y=0 width=100 :height="rowHeight">
         </rect>
@@ -9,7 +9,7 @@
       <g transform="translate(0,24)">
 
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
-          <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="setSelectionEnd(ci, ri)">
+          <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
             <rect x=0 y=0 width=100 :height="rowHeight">
             </rect>
             <text x=2 y=12 width=100 :height="rowHeight">{{col}}</text>
@@ -19,7 +19,7 @@
       </g>
     </svg>
     <div class="editor__frame" :style="styleObj">
-      <input ref="hiddenInput" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
+      <input ref="hiddenInput" @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
     </div>
   </div>
 </template>
@@ -37,7 +37,8 @@ export default {
       data: [
         ["A1", "A2", "A3", "A4"],
         ["B1", "B2", "B3", "B4"],
-        ["C1", "C2", "C3", "C4"]
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
       ],
       selection: {
         c: 0,
@@ -79,12 +80,12 @@ export default {
     }
   },
   methods: {
-    setCell(c, r, value) {
+    setDataAt(c, r, value) {
       Vue.set(this.data[r], c, value);
     },
     onBlur() {
       this.editing = false;
-      this.setCell(this.editingCell.c, this.editingCell.r, this.editingText);
+      this.setDataAt(this.editingCell.c, this.editingCell.r, this.editingText);
     },
     translateCol(ci) {
       return `translate(${ci * 100}, 0)`;
@@ -117,6 +118,14 @@ export default {
       this.selection.er = r;
       this.selectionMode = true;
     },
+    onMouseMoveCell(c, r) {
+      if (this.selectionMode) {
+        this.setSelectionEnd(c, r);
+      }
+    },
+    onMouseUpSvg() {
+      this.endSelection();
+    },
     setSelectionEnd(c, r) {
       if (this.selectionMode) {
         this.selection.ec = c;
@@ -139,7 +148,7 @@ export default {
       this.editCell(this.selection.c, this.selection.r);
     },
     clearCell(c, r) {
-      this.setCell(c, r, "");
+      this.setDataAt(c, r, "");
     },
     clearSelection() {
       for (let i = 0; i < this.selectionSize.h; i++) {
@@ -149,6 +158,11 @@ export default {
       }
     },
     moveCursor(dc, dr) {
+      if(this.selectionMode){
+        this.setSelectionEnd(this.selection.ec + dc, this.selection.er + dr)
+        return
+      }
+
       if (this.selection.c + dc < 0) {
         return;
       }
@@ -191,7 +205,7 @@ export default {
           this.moveCursor(0, 1);
           break;
         case 16: //shift
-          // this.setSelectionStart(this.c, this.r);
+          this.setSelectionStart(this.selection.c, this.selection.r);
           break;
         case 91: //ctrl
           break;
@@ -199,10 +213,22 @@ export default {
           break;
         default:
           if (!this.editing) {
+            var el = this.$refs["hiddenInput"];
+            el.setSelectionRange(
+              this.editingText.length,
+              this.editingText.lengthh
+            );
             this.editHere();
           }
           // isCellModified = true;
           // showTextField(selection);
+          break;
+      }
+    };
+    window.onkeyup = e => {
+      switch (e.keyCode) {
+        case 16: //shift
+          this.endSelection();
           break;
       }
     };
