@@ -38,7 +38,7 @@ export default {
         ["A1", "A2", "A3", "A4"],
         ["B1", "B2", "B3", "B4"],
         ["C1", "C2", "C3", "C4"],
-        ["D1", "D2", "D3", "D4"],
+        ["D1", "D2", "D3", "D4"]
       ],
       selection: {
         c: 0,
@@ -82,6 +82,9 @@ export default {
   methods: {
     setDataAt(c, r, value) {
       Vue.set(this.data[r], c, value);
+    },
+    getDataAt(c, r) {
+      return this.data[r][c];
     },
     onBlur() {
       this.editing = false;
@@ -158,9 +161,9 @@ export default {
       }
     },
     moveCursor(dc, dr) {
-      if(this.selectionMode){
-        this.setSelectionEnd(this.selection.ec + dc, this.selection.er + dr)
-        return
+      if (this.selectionMode) {
+        this.setSelectionEnd(this.selection.ec + dc, this.selection.er + dr);
+        return;
       }
 
       if (this.selection.c + dc < 0) {
@@ -183,6 +186,8 @@ export default {
     }
   },
   mounted() {
+    this.editingText = this.getDataAt(0, 0)
+    this.onBlur();
     window.onkeydown = e => {
       switch (e.keyCode) {
         case 37: //left
