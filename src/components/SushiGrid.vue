@@ -213,10 +213,11 @@ export default {
           break;
         default:
           if (!this.editing) {
+            //Force edit from line end
             var el = this.$refs["hiddenInput"];
             el.setSelectionRange(
               this.editingText.length,
-              this.editingText.lengthh
+              this.editingText.length
             );
             this.editHere();
           }
