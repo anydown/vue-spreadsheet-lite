@@ -18,8 +18,8 @@
         <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="selectionSize.w * 100" :height="selectionSize.h * rowHeight"></rect>
       </g>
     </svg>
-    <div class="editor__frame" :style="styleObj" v-if="editing">
-      <input ref="hiddenInput" class="editor__textarea" v-model="editingText" @blur="onBlur" autofocus />
+    <div class="editor__frame" :style="styleObj">
+      <input ref="hiddenInput" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
     </div>
   </div>
 </template>
@@ -40,9 +40,9 @@ export default {
         ["C1", "C2", "C3", "C4"]
       ],
       selection: {
-        c: 1,
+        c: 0,
         r: 0,
-        ec: 1,
+        ec: 0,
         er: 0
       },
       editingText: "",
@@ -135,11 +135,23 @@ export default {
         this.$refs.hiddenInput.focus();
       });
     },
-    clearCell() {},
+    editHere() {
+      this.editCell(this.selection.c, this.selection.r);
+    },
+    clearCell(c, r) {
+      this.setCell(c, r, "");
+    },
     clearSelection() {
-      this.selectionSize.r;
+      for (let i = 0; i < this.selectionSize.h; i++) {
+        for (let j = 0; j < this.selectionSize.w; j++) {
+          this.clearCell(this.selectionSize.c + j, this.selectionSize.r + i);
+        }
+      }
     },
     moveCursor(dc, dr) {
+      if (this.editing) {
+        this.onBlur();
+      }
       this.setSelectionSingle(this.selection.c + dc, this.selection.r + dr);
     }
   },
@@ -159,6 +171,7 @@ export default {
           this.moveCursor(0, 1);
           break;
         case 46: //delete
+          console.log("clear");
           this.clearSelection();
           break;
         case 13: //enter
@@ -172,6 +185,9 @@ export default {
         case 113: //F2
           break;
         default:
+          if (!this.editing) {
+            this.editHere();
+          }
           // isCellModified = true;
           // showTextField(selection);
           break;
@@ -219,5 +235,12 @@ input {
 svg {
   border: 1px solid #999;
   background: #eee;
+}
+
+.editor__textarea {
+  opacity: 0;
+}
+.editor--visible {
+  opacity: 1;
 }
 </style>
