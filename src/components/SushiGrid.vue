@@ -2,20 +2,20 @@
   <div class="grid" @mouseup="onMouseUpSvg()">
     <svg width=500 height=400 >
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
-        <rect class="col-header" x=0 y=0 width=100 :height="rowHeight">
+        <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
-        <text text-anchor="middle" x=49 y=12 width=100 :height="rowHeight">{{col}}</text>
+        <text text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
       </g>
       <g transform="translate(0,24)">
 
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
           <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
-            <rect x=0 y=0 width=100 :height="rowHeight">
+            <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
             </rect>
-            <text x=2 y=12 width=100 :height="rowHeight">{{col}}</text>
+            <text x=2 y=12 :width="widthAt(ci)" :height="rowHeight">{{col}}</text>
           </g>
         </g>
-        <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="selectionSize.w * 100" :height="selectionSize.h * rowHeight"></rect>
+        <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="getSelectionSize().w" :height="selectionCount.h * rowHeight"></rect>
       </g>
     </svg>
     <div class="editor__frame" :style="styleObj">
@@ -33,7 +33,12 @@ export default {
   props: {},
   data() {
     return {
-      header: ["No", "Name", "Age", "Gender"],
+      header: [
+        { name: "No", width: 50 },
+        { name: "Name", width: 150 },
+        { name: "Age", width: 80 },
+        { name: "Gender", width: 80 }
+      ],
       data: [
         ["A1", "A2", "A3", "A4"],
         ["B1", "B2", "B3", "B4"],
@@ -56,15 +61,15 @@ export default {
   computed: {
     styleObj() {
       return {
-        left: this.selection.c * 100 + "px",
+        left: this.positionLeft(this.selectionCount.c) + "px",
         top: this.selection.r * 24 + 24 + "px"
       };
     },
     selectionTransform() {
-      return `translate(${this.selectionSize.c * 100},  ${this.selectionSize.r *
-        24})`;
+      return `translate(${this.positionLeft(this.selectionCount.c)},  ${this
+        .selectionCount.r * 24})`;
     },
-    selectionSize() {
+    selectionCount() {
       return {
         r:
           this.selection.r <= this.selection.er
@@ -80,6 +85,27 @@ export default {
     }
   },
   methods: {
+    getSelectionSize() {
+      return {
+        r: this.positionLeft(this.selectionCount.r),
+        c: this.positionLeft(this.selectionCount.c),
+        w:
+          this.positionLeft(this.selectionCount.c + this.selectionCount.w) -
+          this.positionLeft(this.selectionCount.c),
+        h:
+          this.positionLeft(this.selectionCount.c + this.selectionCount.h) -
+          this.positionLeft(this.selectionCount.c)
+      };
+    },
+    widthAt(index) {
+      return this.header[index].width;
+    },
+    positionLeft(index) {
+      return this.header
+        .slice(0, index)
+        .map(it => it.width)
+        .reduce((a, b) => a + b, 0);
+    },
     setDataAt(c, r, value) {
       Vue.set(this.data[r], c, value);
     },
@@ -91,17 +117,17 @@ export default {
       this.setDataAt(this.editingCell.c, this.editingCell.r, this.editingText);
     },
     translateCol(ci) {
-      return `translate(${ci * 100}, 0)`;
+      return `translate(${this.positionLeft(ci)}, 0)`;
     },
     translateRow(ri) {
       return `translate(0, ${ri * 24})`;
     },
     onMouseDownCell(c, r) {
       if (
-        this.selectionSize.c === c &&
-        this.selectionSize.r === r &&
-        this.selectionSize.w === 1 &&
-        this.selectionSize.h === 1
+        this.selectionCount.c === c &&
+        this.selectionCount.r === r &&
+        this.selectionCount.w === 1 &&
+        this.selectionCount.h === 1
       ) {
         this.editCell(c, r);
         return;
@@ -151,9 +177,9 @@ export default {
       this.setDataAt(c, r, "");
     },
     clearSelection() {
-      for (let i = 0; i < this.selectionSize.h; i++) {
-        for (let j = 0; j < this.selectionSize.w; j++) {
-          this.clearCell(this.selectionSize.c + j, this.selectionSize.r + i);
+      for (let i = 0; i < this.selectionCount.h; i++) {
+        for (let j = 0; j < this.selectionCount.w; j++) {
+          this.clearCell(this.selectionCount.c + j, this.selectionCount.r + i);
         }
       }
     },
