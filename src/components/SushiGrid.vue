@@ -149,6 +149,19 @@ export default {
       }
     },
     moveCursor(dc, dr) {
+      if (this.selection.c + dc < 0) {
+        return;
+      }
+      if (this.selection.r + dr < 0) {
+        return;
+      }
+      if (this.selection.c + dc > this.data[0].length - 1) {
+        return;
+      }
+      if (this.selection.r + dr > this.data.length - 1) {
+        return;
+      }
+
       if (this.editing) {
         this.onBlur();
       }
@@ -178,7 +191,7 @@ export default {
           this.moveCursor(0, 1);
           break;
         case 16: //shift
-          // selection.selectionStart();
+          // this.setSelectionStart(this.c, this.r);
           break;
         case 91: //ctrl
           break;
