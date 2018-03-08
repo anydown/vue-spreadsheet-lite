@@ -115,10 +115,7 @@ export default {
       this.selection.er = r;
     },
     setSelectionStart(c, r) {
-      this.selection.c = c;
-      this.selection.r = r;
-      this.selection.ec = c;
-      this.selection.er = r;
+      this.setSelectionSingle(c, r);
       this.selectionMode = true;
     },
     onMouseMoveCell(c, r) {
@@ -160,25 +157,34 @@ export default {
         }
       }
     },
+    isInsideTable(c, r) {
+      if (c < 0) {
+        return false;
+      }
+      if (r < 0) {
+        return false;
+      }
+      if (c > this.data[0].length - 1) {
+        return false;
+      }
+      if (r > this.data.length - 1) {
+        return false;
+      }
+      return true;
+    },
     moveCursor(dc, dr) {
       if (this.selectionMode) {
+        if (
+          !this.isInsideTable(this.selection.ec + dc, this.selection.er + dr)
+        ) {
+          return;
+        }
         this.setSelectionEnd(this.selection.ec + dc, this.selection.er + dr);
         return;
       }
-
-      if (this.selection.c + dc < 0) {
+      if (!this.isInsideTable(this.selection.c + dc, this.selection.r + dr)) {
         return;
       }
-      if (this.selection.r + dr < 0) {
-        return;
-      }
-      if (this.selection.c + dc > this.data[0].length - 1) {
-        return;
-      }
-      if (this.selection.r + dr > this.data.length - 1) {
-        return;
-      }
-
       if (this.editing) {
         this.onBlur();
       }
@@ -186,7 +192,7 @@ export default {
     }
   },
   mounted() {
-    this.editingText = this.getDataAt(0, 0)
+    this.editingText = this.getDataAt(0, 0);
     this.onBlur();
     window.onkeydown = e => {
       switch (e.keyCode) {
