@@ -87,8 +87,8 @@ export default {
       selection: {
         c: 0,
         r: 0,
-        ec: 0,
-        er: 0
+        sc: 0,
+        sr: 0
       },
       editingText: "",
       editing: false,
@@ -100,7 +100,7 @@ export default {
   computed: {
     editorStyleObj() {
       return {
-        left: this.positionLeft(this.selectionCount.c) + "px",
+        left: this.positionLeft(this.selection.c) + "px",
         top: this.selection.r * 24 + "px"
       };
     },
@@ -111,15 +111,15 @@ export default {
     selectionCount() {
       return {
         r:
-          this.selection.r <= this.selection.er
+          this.selection.r <= this.selection.sr
             ? this.selection.r
-            : this.selection.er,
+            : this.selection.sr,
         c:
-          this.selection.c <= this.selection.ec
+          this.selection.c <= this.selection.sc
             ? this.selection.c
-            : this.selection.ec,
-        w: Math.abs(this.selection.ec - this.selection.c) + 1,
-        h: Math.abs(this.selection.er - this.selection.r) + 1
+            : this.selection.sc,
+        w: Math.abs(this.selection.sc - this.selection.c) + 1,
+        h: Math.abs(this.selection.sr - this.selection.r) + 1
       };
     },
     selectionSize() {
@@ -153,7 +153,7 @@ export default {
     },
     onBlur() {
       this.editing = false;
-      this.setDataAt(this.editingCell.c, this.editingCell.r, this.editingText);
+      this.setDataAt(this.selection.c, this.selection.r, this.editingText);
     },
     translateCol(ci) {
       return `translate(${this.positionLeft(ci)}, 0)`;
@@ -162,6 +162,9 @@ export default {
       return `translate(0, ${ri * 24})`;
     },
     onMouseDownCell(c, r) {
+      if (this.editing) {
+        this.onBlur();
+      }
       if (
         this.selectionCount.c === c &&
         this.selectionCount.r === r &&
@@ -176,8 +179,9 @@ export default {
     setSelectionSingle(c, r) {
       this.selection.c = c;
       this.selection.r = r;
-      this.selection.ec = c;
-      this.selection.er = r;
+      this.selection.sc = c;
+      this.selection.sr = r;
+      this.setEditingText();
     },
     setSelectionStart(c, r) {
       this.setSelectionSingle(c, r);
@@ -193,8 +197,9 @@ export default {
     },
     setSelectionEnd(c, r) {
       if (this.selectionMode) {
-        this.selection.ec = c;
-        this.selection.er = r;
+        this.selection.c = c;
+        this.selection.r = r;
+        this.setEditingText();
       }
     },
     endSelection() {
@@ -209,10 +214,6 @@ export default {
       });
     },
     editHere() {
-      this.editingText = this.data[this.selection.r][this.selection.c];
-      this.editCell(this.selection.c, this.selection.r);
-    },
-    editHereNew() {
       this.editCell(this.selection.c, this.selection.r);
     },
     clearCell(c, r) {
@@ -241,16 +242,12 @@ export default {
       return true;
     },
     moveCursor(dc, dr) {
-      if (this.selectionMode) {
-        if (
-          !this.isInsideTable(this.selection.ec + dc, this.selection.er + dr)
-        ) {
-          return;
-        }
-        this.setSelectionEnd(this.selection.ec + dc, this.selection.er + dr);
+      if (!this.isInsideTable(this.selection.c + dc, this.selection.r + dr)) {
         return;
       }
-      if (!this.isInsideTable(this.selection.c + dc, this.selection.r + dr)) {
+      if (this.selectionMode) {
+        this.setSelectionEnd(this.selection.c + dc, this.selection.r + dr);
+        this.fixScroll();
         return;
       }
       if (this.editing) {
@@ -272,6 +269,9 @@ export default {
       if (el.scrollTop < this.selection.r * 24 - el.clientHeight + 24) {
         el.scrollTop = this.selection.r * 24 - el.clientHeight + 24;
       }
+    },
+    setEditingText() {
+      this.editingText = this.getDataAt(this.selection.c, this.selection.r);
     }
   },
   mounted() {
@@ -322,7 +322,7 @@ export default {
         default:
           if (!this.editing) {
             this.editingText = "";
-            this.editHereNew();
+            this.editHere();
           }
           break;
       }
