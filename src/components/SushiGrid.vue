@@ -18,10 +18,10 @@
               <text x=2 y=12 :width="widthAt(ci)" :height="rowHeight">{{col}}</text>
             </g>
           </g>
-          <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="getSelectionSize().w" :height="selectionCount.h * rowHeight"></rect>
+          <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="selectionSize.w" :height="selectionCount.h * rowHeight"></rect>
         </g>
       </svg>
-      <div class="editor__frame" :style="styleObj">
+      <div class="editor__frame" :style="editorStyleObj">
         <input ref="hiddenInput" @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
       </div>
     </div>
@@ -98,7 +98,7 @@ export default {
     };
   },
   computed: {
-    styleObj() {
+    editorStyleObj() {
       return {
         left: this.positionLeft(this.selectionCount.c) + "px",
         top: this.selection.r * 24 + "px"
@@ -121,10 +121,8 @@ export default {
         w: Math.abs(this.selection.ec - this.selection.c) + 1,
         h: Math.abs(this.selection.er - this.selection.r) + 1
       };
-    }
-  },
-  methods: {
-    getSelectionSize() {
+    },
+    selectionSize() {
       return {
         r: this.positionLeft(this.selectionCount.r),
         c: this.positionLeft(this.selectionCount.c),
@@ -135,7 +133,9 @@ export default {
           this.positionLeft(this.selectionCount.c + this.selectionCount.h) -
           this.positionLeft(this.selectionCount.c)
       };
-    },
+    }
+  },
+  methods: {
     widthAt(index) {
       return this.header[index].width;
     },
