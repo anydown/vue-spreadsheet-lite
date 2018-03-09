@@ -129,7 +129,7 @@ export default {
         this.selectionCount.w === 1 &&
         this.selectionCount.h === 1
       ) {
-        this.editCell(c, r);
+        this.editHere();
         return;
       }
       this.setSelectionStart(c, r);
@@ -164,13 +164,16 @@ export default {
     editCell(c, r) {
       this.editingCell.c = c;
       this.editingCell.r = r;
-      this.editingText = this.data[r][c];
       this.editing = true;
       Vue.nextTick(() => {
         this.$refs.hiddenInput.focus();
       });
     },
     editHere() {
+      this.editingText = this.data[this.selection.r][this.selection.c];
+      this.editCell(this.selection.c, this.selection.r);
+    },
+    editHereNew() {
       this.editCell(this.selection.c, this.selection.r);
     },
     clearCell(c, r) {
@@ -215,6 +218,10 @@ export default {
         this.onBlur();
       }
       this.setSelectionSingle(this.selection.c + dc, this.selection.r + dr);
+    },
+    moveInputCaretToEnd() {
+      var el = this.$refs["hiddenInput"];
+      el.setSelectionRange(this.editingText.length, this.editingText.length);
     }
   },
   mounted() {
@@ -222,6 +229,12 @@ export default {
     this.onBlur();
     window.onkeydown = e => {
       switch (e.keyCode) {
+        case 8: //backspace
+          if (!this.editing) {
+            this.moveInputCaretToEnd();
+            this.editHere();
+          }
+          break;
         case 37: //left
           this.moveCursor(-1, 0);
           break;
@@ -235,7 +248,6 @@ export default {
           this.moveCursor(0, 1);
           break;
         case 46: //delete
-          console.log("clear");
           this.clearSelection();
           break;
         case 13: //enter
@@ -247,19 +259,16 @@ export default {
         case 91: //ctrl
           break;
         case 113: //F2
+          if (!this.editing) {
+            this.moveInputCaretToEnd();
+            this.editHere();
+          }
           break;
         default:
           if (!this.editing) {
-            //Force edit from line end
-            var el = this.$refs["hiddenInput"];
-            el.setSelectionRange(
-              this.editingText.length,
-              this.editingText.length
-            );
-            this.editHere();
+            this.editingText = "";
+            this.editHereNew();
           }
-          // isCellModified = true;
-          // showTextField(selection);
           break;
       }
     };
