@@ -1,25 +1,29 @@
 <template>
   <div class="grid" @mouseup="onMouseUpSvg()">
-    <svg width=500 height=400 >
+    <svg width=500 height=24 >
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
         <text text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
       </g>
-      <g transform="translate(0,24)">
-
-        <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
-          <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
-            <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
-            </rect>
-            <text x=2 y=12 :width="widthAt(ci)" :height="rowHeight">{{col}}</text>
-          </g>
-        </g>
-        <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="getSelectionSize().w" :height="selectionCount.h * rowHeight"></rect>
-      </g>
     </svg>
-    <div class="editor__frame" :style="styleObj">
-      <input ref="hiddenInput" @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
+
+    <div ref="wrapper" style="height: 400px; width:500px; overflow: scroll; position:relative;">
+      <svg width=500 :height="data.length * 24" >
+        <g transform="translate(0,0)">
+          <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
+            <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
+              <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
+              </rect>
+              <text x=2 y=12 :width="widthAt(ci)" :height="rowHeight">{{col}}</text>
+            </g>
+          </g>
+          <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="getSelectionSize().w" :height="selectionCount.h * rowHeight"></rect>
+        </g>
+      </svg>
+      <div class="editor__frame" :style="styleObj">
+        <input ref="hiddenInput" @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
+      </div>
     </div>
   </div>
 </template>
@@ -43,6 +47,41 @@ export default {
         ["A1", "A2", "A3", "A4"],
         ["B1", "B2", "B3", "B4"],
         ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
+        ["D1", "D2", "D3", "D4"],
+        ["A1", "A2", "A3", "A4"],
+        ["B1", "B2", "B3", "B4"],
+        ["C1", "C2", "C3", "C4"],
         ["D1", "D2", "D3", "D4"]
       ],
       selection: {
@@ -62,7 +101,7 @@ export default {
     styleObj() {
       return {
         left: this.positionLeft(this.selectionCount.c) + "px",
-        top: this.selection.r * 24 + 24 + "px"
+        top: this.selection.r * 24 + "px"
       };
     },
     selectionTransform() {
@@ -218,15 +257,27 @@ export default {
         this.onBlur();
       }
       this.setSelectionSingle(this.selection.c + dc, this.selection.r + dr);
+      this.fixScroll();
     },
     moveInputCaretToEnd() {
       var el = this.$refs["hiddenInput"];
       el.setSelectionRange(this.editingText.length, this.editingText.length);
+    },
+    fixScroll() {
+      const el = this.$refs["wrapper"];
+
+      if (el.scrollTop > this.selection.r * 24) {
+        el.scrollTop = this.selection.r * 24;
+      }
+      if (el.scrollTop < this.selection.r * 24 - el.clientHeight + 24) {
+        el.scrollTop = this.selection.r * 24 - el.clientHeight + 24;
+      }
     }
   },
   mounted() {
     this.editingText = this.getDataAt(0, 0);
     this.onBlur();
+
     window.onkeydown = e => {
       switch (e.keyCode) {
         case 8: //backspace
@@ -237,15 +288,19 @@ export default {
           break;
         case 37: //left
           this.moveCursor(-1, 0);
+          e.preventDefault();
           break;
         case 38: //up
           this.moveCursor(0, -1);
+          e.preventDefault();
           break;
         case 39: //right
           this.moveCursor(1, 0);
+          e.preventDefault();
           break;
         case 40: //down
           this.moveCursor(0, 1);
+          e.preventDefault();
           break;
         case 46: //delete
           this.clearSelection();
@@ -319,8 +374,8 @@ input {
 }
 
 svg {
-  border: 1px solid #999;
   background: #eee;
+  display: block;
 }
 
 .editor__textarea {
