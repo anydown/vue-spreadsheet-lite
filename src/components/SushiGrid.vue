@@ -1,6 +1,6 @@
 <template>
   <div class="grid" @mouseup="onMouseUpSvg()" @mousemove="headerResizeMove">
-    <svg :width="positionLeft(data.length)" height=24>
+    <svg :width="positionLeft(data.length + 1)" height=24>
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)" @mousedown="startColumnSelect(ci)" @mousemove="changeColumnSelect(ci)" @mouseup="endColumnSelect">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
@@ -10,7 +10,7 @@
     </svg>
 
     <div ref="wrapper" style="height: 400px; overflow: scroll; position:relative;">
-      <svg :width="positionLeft(data.length)" :height="data.length * 24" >
+      <svg :width="positionLeft(data.length + 1)" :height="data.length * 24" >
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
           <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
             <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
@@ -134,6 +134,7 @@ export default {
     },
     setDataAt(c, r, value) {
       Vue.set(this.data[r], c, value);
+      this.$emit("update", this.data);
     },
     getDataAt(c, r) {
       return this.data[r][c];
