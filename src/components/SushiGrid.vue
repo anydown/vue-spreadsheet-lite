@@ -1,7 +1,7 @@
 <template>
   <div class="grid" @mouseup="onMouseUpSvg()" @mousemove="headerResizeMove">
     <svg :width="positionLeft(data.length)" height=24>
-      <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
+      <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)" @mousedown="startColumnSelect(ci)" @mousemove="changeColumnSelect(ci)" @mouseup="endColumnSelect">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
         <text class="col-header__text" text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
@@ -49,6 +49,7 @@ export default {
       editing: false,
       rowHeight: 24,
       selectionMode: false,
+      selectionModeColumn: false,
       headerResizeAt: -1
     };
   },
@@ -91,6 +92,21 @@ export default {
     }
   },
   methods: {
+    startColumnSelect(c) {
+      this.selection.sr = this.data.length - 1;
+      this.selection.r = 0;
+      this.selection.sc = c;
+      this.selection.c = c;
+      this.selectionModeColumn = true;
+    },
+    changeColumnSelect(c) {
+      if (this.selectionModeColumn) {
+        this.selection.c = c;
+      }
+    },
+    endColumnSelect() {
+      this.selectionModeColumn = false;
+    },
     headerResizeStart(c) {
       this.headerResizeAt = c;
     },
