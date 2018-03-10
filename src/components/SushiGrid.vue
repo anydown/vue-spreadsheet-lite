@@ -1,25 +1,24 @@
 <template>
-  <div class="grid" @mouseup="onMouseUpSvg()">
-    <svg width=500 height=24 >
+  <div class="grid" @mouseup="onMouseUpSvg()" @mousemove="headerResizeMove">
+    <svg width=500 height=24>
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
         <text text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
+        <rect class="col-header__resize" :class="{'active': ci === headerResizeAt}" :x="widthAt(ci) - 5" :y=0 :width="5" :height="rowHeight" @mousedown="headerResizeStart(ci)"></rect>
       </g>
     </svg>
 
     <div ref="wrapper" style="height: 400px; width:500px; overflow: scroll; position:relative;">
       <svg width=500 :height="data.length * 24" >
-        <g transform="translate(0,0)">
-          <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
-            <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
-              <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
-              </rect>
-              <text x=2 y=12 :width="widthAt(ci)" :height="rowHeight">{{col}}</text>
-            </g>
+        <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
+          <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
+            <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
+            </rect>
+            <text x=2 y=12 :width="widthAt(ci)" :height="rowHeight">{{col}}</text>
           </g>
-          <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="selectionSize.w" :height="selectionCount.h * rowHeight"></rect>
         </g>
+        <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="selectionSize.w" :height="selectionCount.h * rowHeight"></rect>
       </svg>
       <div class="editor__frame" :style="editorStyleObj">
         <input ref="hiddenInput" @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
@@ -93,7 +92,8 @@ export default {
       editingText: "",
       editing: false,
       rowHeight: 24,
-      selectionMode: false
+      selectionMode: false,
+      headerResizeAt: -1
     };
   },
   computed: {
@@ -135,6 +135,21 @@ export default {
     }
   },
   methods: {
+    headerResizeStart(c) {
+      this.headerResizeAt = c;
+      // this.header[c].width = 100;
+    },
+    headerResizeEnd() {
+      this.headerResizeAt = -1;
+    },
+    headerResizeMove(e) {
+      var headerRect = e.target.parentNode.parentNode.getBoundingClientRect();
+      var headerMouseX = e.clientX - headerRect.left;
+      if (this.headerResizeAt >= 0) {
+        this.header[this.headerResizeAt].width =
+          headerMouseX - this.positionLeft(this.headerResizeAt);
+      }
+    },
     widthAt(index) {
       return this.header[index].width;
     },
@@ -193,6 +208,7 @@ export default {
     },
     onMouseUpSvg() {
       this.endSelection();
+      this.headerResizeEnd();
     },
     setSelectionEnd(c, r) {
       if (this.selectionMode) {
@@ -350,6 +366,20 @@ rect {
 .col-header {
   fill: #eee;
 }
+.col-header__resize {
+  cursor: col-resize;
+  opacity: 0;
+}
+.col-header__resize:hover {
+  cursor: col-resize;
+  fill: rgb(158, 55, 255);
+  opacity: 0.5;
+}
+.col-header__resize.active {
+  fill: rgb(158, 55, 255);
+  opacity: 0.5;
+}
+
 .grid {
   position: relative;
 }
