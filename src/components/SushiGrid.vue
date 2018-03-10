@@ -4,7 +4,7 @@
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
-        <text text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
+        <text class="col-header__text" text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
         <rect class="col-header__resize" :class="{'active': ci === headerResizeAt}" :x="widthAt(ci) - 5" :y=0 :width="5" :height="rowHeight" @mousedown="headerResizeStart(ci)"></rect>
       </g>
     </svg>
@@ -101,8 +101,10 @@ export default {
       var headerRect = e.target.parentNode.parentNode.getBoundingClientRect();
       var headerMouseX = e.clientX - headerRect.left;
       if (this.headerResizeAt >= 0) {
-        this.header[this.headerResizeAt].width =
+        const updateWidth =
           headerMouseX - this.positionLeft(this.headerResizeAt);
+        this.header[this.headerResizeAt].width =
+          updateWidth > 30 ? updateWidth : 30;
       }
     },
     widthAt(index) {
