@@ -1,6 +1,6 @@
 <template>
   <div class="grid" @mouseup="onMouseUpSvg()" @mousemove="headerResizeMove">
-    <svg width=500 height=24>
+    <svg :width="positionLeft(data.length)" height=24>
       <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
@@ -9,8 +9,8 @@
       </g>
     </svg>
 
-    <div ref="wrapper" style="height: 400px; width:500px; overflow: scroll; position:relative;">
-      <svg width=500 :height="data.length * 24" >
+    <div ref="wrapper" style="height: 400px; overflow: scroll; position:relative;">
+      <svg :width="positionLeft(data.length)" :height="data.length * 24" >
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
           <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
             <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
@@ -239,6 +239,13 @@ export default {
       if (el.scrollTop < this.selection.r * 24 - el.clientHeight + 24) {
         el.scrollTop = this.selection.r * 24 - el.clientHeight + 24;
       }
+
+      if (
+        el.scrollLeft <
+        this.positionLeft(this.selection.c) - el.clientWidth
+      ) {
+        el.scrollLeft = this.positionLeft(this.selection.c);
+      }
     },
     setEditingText() {
       this.editingText = this.getDataAt(this.selection.c, this.selection.r);
@@ -339,6 +346,7 @@ rect {
 
 .grid {
   position: relative;
+  background: #eee;
 }
 
 .editor__frame {
@@ -358,7 +366,6 @@ input {
 }
 
 svg {
-  background: #eee;
   display: block;
 }
 
