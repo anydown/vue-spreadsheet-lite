@@ -92,7 +92,6 @@ export default {
       },
       editingText: "",
       editing: false,
-      editingCell: { c: 0, r: 0 },
       rowHeight: 24,
       selectionMode: false
     };
@@ -206,8 +205,6 @@ export default {
       this.selectionMode = false;
     },
     editCell(c, r) {
-      this.editingCell.c = c;
-      this.editingCell.r = r;
       this.editing = true;
       Vue.nextTick(() => {
         this.$refs.hiddenInput.focus();
