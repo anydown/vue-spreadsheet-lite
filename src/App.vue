@@ -1,13 +1,18 @@
 <template>
   <div id="app">
-    <sushi-grid :data="gridData" :header="header" @update="onUpdate"/>
-
     <textarea v-model="dataSrc"></textarea>
+    <div class="right">
+      <sushi-grid :data="gridData" @update="onUpdate"/>
+    </div>
   </div>
 </template>
 
 <script>
 import SushiGrid from "./components/SushiGrid.vue";
+
+const example = [...Array(20).keys()]
+  .map(i => `A${i} B${i} C${i} D${i}`)
+  .join("\n");
 
 export default {
   name: "app",
@@ -22,20 +27,14 @@ export default {
   methods: {
     onUpdate(data) {
       if (data) {
-        console.log("data", data);
-        this.dataSrc = data.map(s => s.join(" ")).join("\n");
+        let output = data.map(s => s.join(" ")).join("\n");
+        this.dataSrc = output;
       }
     }
   },
   data() {
     return {
-      dataSrc: "No Name Age Gender\na b c d\na b c d",
-      header: [
-        { name: "No", width: 50 },
-        { name: "Name", width: 150 },
-        { name: "Age", width: 80 },
-        { name: "Gender", width: 80 }
-      ]
+      dataSrc: example
     };
   }
 };
@@ -44,6 +43,15 @@ export default {
 <style>
 #app {
   margin: 1rem;
+  display: flex;
+}
+textarea {
+  width: 20rem;
+  background: #333;
+  color: white;
+}
+.right {
+  flex: 1;
 }
 </style>
 

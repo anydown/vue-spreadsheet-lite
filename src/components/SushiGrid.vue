@@ -1,7 +1,7 @@
 <template>
   <div class="grid" @mouseup="onMouseUpSvg()" @mousemove="headerResizeMove">
     <svg :width="positionLeft(data.length + 1)" height=24>
-      <g v-for="(col, ci) in header" :key="ci" :transform="translateCol(ci)" @mousedown="startColumnSelect(ci)" @mousemove="changeColumnSelect(ci)" @mouseup="endColumnSelect">
+      <g v-for="(col, ci) in headerObj" :key="ci" :transform="translateCol(ci)" @mousedown="startColumnSelect(ci)" @mousemove="changeColumnSelect(ci)" @mouseup="endColumnSelect">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
         <text class="col-header__text" text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
@@ -89,6 +89,16 @@ export default {
           this.positionLeft(this.selectionCount.c + this.selectionCount.h) -
           this.positionLeft(this.selectionCount.c)
       };
+    },
+    headerObj() {
+      return this.header
+        ? this.header
+        : this.data[0].map((item, idx) => {
+            return {
+              name: String.fromCharCode(65 + idx),
+              width: 80
+            };
+          });
     }
   },
   methods: {
@@ -119,15 +129,15 @@ export default {
       if (this.headerResizeAt >= 0) {
         const updateWidth =
           headerMouseX - this.positionLeft(this.headerResizeAt);
-        this.header[this.headerResizeAt].width =
+        this.headerObj[this.headerResizeAt].width =
           updateWidth > 30 ? updateWidth : 30;
       }
     },
     widthAt(index) {
-      return this.header[index].width;
+      return this.headerObj[index].width;
     },
     positionLeft(index) {
-      return this.header
+      return this.headerObj
         .slice(0, index)
         .map(it => it.width)
         .reduce((a, b) => a + b, 0);
@@ -272,7 +282,7 @@ export default {
     this.editingText = this.getDataAt(0, 0);
     this.onBlur();
 
-    window.onkeydown = e => {
+    this.$el.onkeydown = e => {
       switch (e.keyCode) {
         case 8: //backspace
           if (!this.editing) {
@@ -321,7 +331,7 @@ export default {
           break;
       }
     };
-    window.onkeyup = e => {
+    this.$el.onkeyup = e => {
       switch (e.keyCode) {
         case 16: //shift
           this.endSelection();
@@ -365,7 +375,6 @@ rect {
   position: relative;
   background: #eee;
 }
-
 .editor__frame {
   position: absolute;
 }
