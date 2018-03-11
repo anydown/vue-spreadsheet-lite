@@ -1,8 +1,18 @@
 <template>
   <div id="app">
-    <textarea v-model="dataSrc"></textarea>
-    <div class="right">
-      <sushi-grid :data="gridData" @update="onUpdate"/>
+    <h1>vue-spreadsheet-lite</h1>
+    <select v-model="mode">
+      <option value="basic">Basic</option>
+      <option value="csv">CSV Editing</option>
+    </select>
+    <div class="pane" v-if="mode === 'basic'">
+      <sushi-grid :data="demoBasic.data" :header="demoBasic.header"/>
+    </div>
+    <div class="pane" v-if="mode === 'csv'">
+      <textarea v-model="dataSrc"></textarea>
+      <div class="right">
+        <sushi-grid :data="gridData" @update="onUpdate"/>
+      </div>
     </div>
   </div>
 </template>
@@ -34,16 +44,32 @@ export default {
   },
   data() {
     return {
-      dataSrc: example
+      demoBasic: {
+        header: [
+          { name: "Name", width: 200 },
+          { name: "Age", width: 60 },
+          { name: "Gender", width: 60 }
+        ],
+        data: [
+          ["Yamada Taro", "12", "M"],
+          ["Yamada Hanako", "12", "M"],
+          ["Sato Jiro", "12", "M"],
+          ["Sato Hanako", "12", "M"]
+        ]
+      },
+      dataSrc: example,
+      mode: "basic"
     };
   }
 };
 </script>
 
 <style>
+.pane {
+  display: flex;
+}
 #app {
   margin: 1rem;
-  display: flex;
 }
 textarea {
   width: 20rem;

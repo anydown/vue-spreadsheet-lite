@@ -1,16 +1,16 @@
 <template>
   <div class="grid" @mouseup="onMouseUpSvg()" @mousemove="headerResizeMove">
-    <svg :width="positionLeft(data.length + 1)" height=24>
+    <svg :width="positionLeft(data.length + 1) + 1" height=24>
       <g v-for="(col, ci) in headerObj" :key="ci" :transform="translateCol(ci)" @mousedown="startColumnSelect(ci)" @mousemove="changeColumnSelect(ci)" @mouseup="endColumnSelect">
         <rect class="col-header" x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
         </rect>
         <text class="col-header__text" text-anchor="middle" :x="widthAt(ci) / 2" y=12 :width="widthAt(ci)" :height="rowHeight">{{col.name}}</text>
-        <rect class="col-header__resize" :class="{'active': ci === headerResizeAt}" :x="widthAt(ci) - 5" :y=0 :width="5" :height="rowHeight" @mousedown="headerResizeStart(ci)"></rect>
+        <rect class="col-header__resize" :class="{'active': ci === headerResizeAt}" :x="widthAt(ci) - 5" :y=0 :width="5" :height="rowHeight" @mousedown.stop="headerResizeStart(ci)"></rect>
       </g>
     </svg>
 
     <div ref="wrapper" style="height: 400px; overflow: scroll; position:relative;">
-      <svg :width="positionLeft(data.length + 1)" :height="data.length * 24" >
+      <svg :width="positionLeft(data.length + 1) + 1" :height="data.length * 24" >
         <g v-for="(row, ri) in data" :key="ri" :transform="translateRow(ri)">
           <g v-for="(col, ci) in row" :key="ci" :transform="translateCol(ci)" @mousedown="onMouseDownCell(ci, ri)" @mousemove="onMouseMoveCell(ci, ri)">
             <rect x=0 y=0 :width="widthAt(ci)" :height="rowHeight">
@@ -21,7 +21,7 @@
         <rect :transform="selectionTransform" class="selection" x=0 y=0 :width="selectionSize.w" :height="selectionCount.h * rowHeight"></rect>
       </svg>
       <div class="editor__frame" :style="editorStyleObj">
-        <input ref="hiddenInput" @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
+        <input ref="hiddenInput"  @mousedown="onMouseDownCell(selection.c, selection.r)" class="editor__textarea" v-model="editingText" @blur="onBlur" :class="{'editor--visible': editing}" autofocus />
       </div>
     </div>
   </div>
@@ -57,7 +57,8 @@ export default {
     editorStyleObj() {
       return {
         left: this.positionLeft(this.selection.c) + "px",
-        top: this.selection.r * 24 + "px"
+        top: this.selection.r * 24 + "px",
+        width: this.selectionSize.w + "px"
       };
     },
     selectionTransform() {
@@ -173,6 +174,9 @@ export default {
         return;
       }
       this.setSelectionStart(c, r);
+      Vue.nextTick(() => {
+        this.$refs["hiddenInput"].focus();
+      });
     },
     setSelectionSingle(c, r) {
       this.selection.c = c;
@@ -282,7 +286,9 @@ export default {
     this.editingText = this.getDataAt(0, 0);
     this.onBlur();
 
-    this.$el.onkeydown = e => {
+    const target = this.$el;
+
+    target.onkeydown = e => {
       switch (e.keyCode) {
         case 8: //backspace
           if (!this.editing) {
@@ -331,7 +337,7 @@ export default {
           break;
       }
     };
-    this.$el.onkeyup = e => {
+    target.onkeyup = e => {
       switch (e.keyCode) {
         case 16: //shift
           this.endSelection();
@@ -374,9 +380,11 @@ rect {
 .grid {
   position: relative;
   background: #eee;
+  width: 100%;
 }
 .editor__frame {
   position: absolute;
+  overflow: hidden;
 }
 
 text {
@@ -397,6 +405,7 @@ svg {
 
 .editor__textarea {
   opacity: 0;
+  width: 100%;
 }
 .editor--visible {
   opacity: 1;
