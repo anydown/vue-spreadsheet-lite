@@ -5,8 +5,9 @@
       <option value="basic">Basic</option>
       <option value="csv">CSV Editing</option>
     </select>
-    <div class="pane" v-if="mode === 'basic'">
+    <div v-if="mode === 'basic'">
       <sushi-grid :data="demoBasic.data" :header="demoBasic.header"/>
+      <button @click="addRow">Add Row</button>
     </div>
     <div class="pane" v-if="mode === 'csv'">
       <textarea v-model="dataSrc"></textarea>
@@ -40,6 +41,9 @@ export default {
         let output = data.map(s => s.join(" ")).join("\n");
         this.dataSrc = output;
       }
+    },
+    addRow() {
+      this.demoBasic.data.push(["", "", ""]);
     }
   },
   data() {
