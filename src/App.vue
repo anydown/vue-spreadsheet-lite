@@ -6,20 +6,20 @@
       <option value="csv">CSV Editing</option>
     </select>
     <div v-if="mode === 'basic'">
-      <sushi-grid :data="demoBasic.data" :header="demoBasic.header"/>
+      <vue-spreadsheet-lite :data="demoBasic.data" :header="demoBasic.header"/>
       <button @click="addRow">Add Row</button>
     </div>
     <div class="pane" v-if="mode === 'csv'">
       <textarea v-model="dataSrc"></textarea>
       <div class="right">
-        <sushi-grid :data="gridData" @update="onUpdate"/>
+        <vue-spreadsheet-lite :data="gridData" @update="onUpdate"/>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import SushiGrid from "./components/SushiGrid.vue";
+import VueSpreadsheetLite from "./components/VueSpreadsheetLite.vue";
 
 const example = [...Array(20).keys()]
   .map(i => `A${i} B${i} C${i} D${i}`)
@@ -28,7 +28,7 @@ const example = [...Array(20).keys()]
 export default {
   name: "app",
   components: {
-    SushiGrid
+    VueSpreadsheetLite
   },
   computed: {
     gridData() {

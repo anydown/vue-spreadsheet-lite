@@ -32,7 +32,7 @@ import "bootstrap/dist/css/bootstrap-reboot.min.css";
 import Vue from "vue";
 
 export default {
-  name: "SushiGrid",
+  name: "VueSpreadsheetLite",
   props: {
     header: Array,
     data: Array

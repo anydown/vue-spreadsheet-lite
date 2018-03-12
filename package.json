@@ -1,21 +1,26 @@
 {
-  "name": "study-svg-grid",
+  "name": "vue-spreadsheet-lite",
   "version": "0.1.0",
-  "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "example:serve": "vue-cli-service serve",
+    "prepublish": "npm run build",
+    "build": "bili --plugin vue --no-babel.babelrc",
+    "example:build": "vue-cli-service build",
     "deploy": "gh-pages -d dist"
   },
+  "files": ["dist"],
   "dependencies": {
     "vue": "^2.5.13"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0-beta.2",
     "@vue/cli-service": "^3.0.0-beta.2",
+    "bili": "^3.0.4",
     "bootstrap": "^4.0.0",
     "gh-pages": "^1.1.0",
+    "rollup-plugin-vue": "^3.0.0",
     "vue-template-compiler": "^2.5.13"
   },
+  "main": "dist/vue-spreadsheet-lite.cjs.js",
   "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
 }
