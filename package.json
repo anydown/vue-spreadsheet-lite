@@ -1,6 +1,11 @@
 {
   "name": "@anydown/vue-spreadsheet-lite",
   "version": "0.2.0",
+  "license": "MIT",
+  "repository": {
+    "url": "anydown/vue-spreadsheet-lite",
+    "type": "git"
+  },
   "scripts": {
     "example:serve": "vue-cli-service serve",
     "prepublish": "npm run build",
