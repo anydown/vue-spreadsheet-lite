@@ -1,6 +1,6 @@
 {
   "name": "vue-spreadsheet-lite",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "scripts": {
     "example:serve": "vue-cli-service serve",
     "prepublish": "npm run build",
@@ -8,7 +8,9 @@
     "example:build": "vue-cli-service build",
     "deploy": "gh-pages -d dist"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "vue": "^2.5.13"
   },
@@ -22,5 +24,9 @@
     "vue-template-compiler": "^2.5.13"
   },
   "main": "dist/vue-spreadsheet-lite.cjs.js",
-  "browserslist": ["> 1%", "last 2 versions", "not ie <= 8"]
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 8"
+  ]
 }
