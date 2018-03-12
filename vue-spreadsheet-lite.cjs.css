@@ -1,0 +1,417 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+rect[data-v-38127464] {
+  fill: white;
+  stroke: #999;
+  shape-rendering: crispEdges;
+}
+.selection[data-v-38127464] {
+  fill: none;
+  stroke: rgb(158, 55, 255);
+  stroke-width: 3px;
+}
+.col-header[data-v-38127464] {
+  fill: #eee;
+}
+.col-header__resize[data-v-38127464] {
+  cursor: col-resize;
+  opacity: 0;
+}
+.col-header__resize[data-v-38127464]:hover {
+  cursor: col-resize;
+  fill: rgb(158, 55, 255);
+  opacity: 0.5;
+}
+.col-header__resize.active[data-v-38127464] {
+  fill: rgb(158, 55, 255);
+  opacity: 0.5;
+}
+
+.grid[data-v-38127464] {
+  position: relative;
+  background: #eee;
+  width: 100%;
+}
+.editor__frame[data-v-38127464] {
+  position: absolute;
+  overflow: hidden;
+}
+
+text[data-v-38127464] {
+  dominant-baseline: central;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+}
+
+input[data-v-38127464] {
+  border: none;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  outline: 0;
+  margin-left: 2px;
+}
+
+svg[data-v-38127464] {
+  display: block;
+}
+
+.editor__textarea[data-v-38127464] {
+  opacity: 0;
+  width: 100%;
+}
+.editor--visible[data-v-38127464] {
+  opacity: 1;
+}
+
