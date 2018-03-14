@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.2.1"></a>
+## [0.2.1](https://github.com/anydown/vue-spreadsheet-lite/compare/v0.2.0...v0.2.1) (2018-03-14)
+
+
+### Bug Fixes
+
+* Disable babel polyfills ([77d9af7](https://github.com/anydown/vue-spreadsheet-lite/commit/77d9af7))
+
+
+
 <a name="0.2.0"></a>
 # 0.2.0 (2018-03-12)
 
