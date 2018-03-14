@@ -8,8 +8,8 @@
   },
   "scripts": {
     "example:serve": "vue-cli-service serve",
-    "prepublish": "npm run build",
-    "build": "bili --plugin vue",
+    "prepublishOnly": "npm run build",
+    "build": "bili --plugin vue --inline --external vue",
     "example:build": "vue-cli-service build",
     "deploy": "gh-pages -d dist"
   },
@@ -22,7 +22,7 @@
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0-beta.2",
     "@vue/cli-service": "^3.0.0-beta.2",
-    "bili": "^3.0.6",
+    "bili": "^3.0.7",
     "bootstrap": "^4.0.0",
     "gh-pages": "^1.1.0",
     "rollup-plugin-vue": "^3.0.0",
