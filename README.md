@@ -10,7 +10,7 @@ npm install -D @anydown/vue-spreadsheet-lite
 
 ```
 import VueSpreadsheetLite from "vue-spreadsheet-lite";
-import "vue-spreadsheet-lite/dist/vue-spreadsheet-lite.cjs.css";
+import "vue-spreadsheet-lite/dist/vue-spreadsheet-lite.css";
 
 ...
 
